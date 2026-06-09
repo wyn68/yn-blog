@@ -155,16 +155,6 @@ export default async function RootLayout({
   return (
     <html lang="zh-CN" className={inter.className} suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content={siteTitle} />
-        <meta name="application-name" content={siteTitle} />
-        <meta name="msapplication-TileColor" content="#6366f1" />
-        <meta name="msapplication-tap-highlight" content="no" />
-        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -181,6 +171,24 @@ export default async function RootLayout({
             `,
           }}
         />
+        <style>{`
+          html {
+            background-color: #fefefe;
+          }
+          html.dark {
+            background-color: #0a0f1a;
+          }
+        `}</style>
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content={siteTitle} />
+        <meta name="application-name" content={siteTitle} />
+        <meta name="msapplication-TileColor" content="#6366f1" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a" />
       </head>
       <body className="min-h-screen bg-background text-foreground">
         <JsonLd data={websiteJsonLd} />
