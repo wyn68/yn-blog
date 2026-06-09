@@ -172,20 +172,31 @@ async function SiteStatsSidebar() {
 
 async function CategoriesSidebar() {
   const categories = await getCategories();
+  const limitedCategories = categories.slice(0, 12);
   
   return (
     <FadeInServer delay={0.4}>
       <div className="rounded-2xl p-6 bg-card border border-border shadow-card">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-            <FolderOpen className="w-4 h-4 text-muted-foreground" />
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+              <FolderOpen className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-semibold text-card-foreground">
+              分类
+            </h3>
           </div>
-          <h3 className="text-lg font-semibold text-card-foreground">
-            分类
-          </h3>
+          {categories.length > 12 && (
+            <LoadingLink
+              href="/categories"
+              className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              查看全部
+            </LoadingLink>
+          )}
         </div>
         <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
+          {limitedCategories.map((category) => (
             <LoadingLink
               key={category.id}
               href={`/categories/${category.slug}`}
