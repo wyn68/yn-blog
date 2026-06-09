@@ -159,7 +159,7 @@ export default function Header() {
               transition={{ duration: motionTokens.duration.fast, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] }}
             >
               <Link href="/" className="flex items-center gap-2 sm:gap-2.5" aria-label="返回首页">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center shadow-sm" role="img" aria-label="YN Blog Logo">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center shadow-sm" role="img" aria-label="YN Blog Logo">
                   <span className="text-white font-bold text-sm sm:text-base tracking-tight">YN</span>
                 </div>
                 <span className="text-sm sm:text-base font-semibold tracking-tight hidden sm:block text-foreground">

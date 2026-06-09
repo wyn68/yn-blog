@@ -32,7 +32,7 @@ export default function Footer() {
     return settings[key] || defaultValue;
   };
 
-  const githubUrl = getSetting("social_github", "https://github.com/wyn68");
+  const githubUrl = getSetting("social_github", "https://github.com/wyn68/yn-blog");
   const twitterUrl = getSetting("social_twitter", "https://twitter.com");
   const emailUrl = `mailto:${getSetting("social_email", "admin@ynpro.top")}`;
 
