@@ -77,7 +77,7 @@ export async function saveProfile(formData: FormData) {
     username: username.trim(),
     bio: bio?.trim() || undefined,
     avatar_url: avatar_url?.trim() || undefined,
-    website: website?.trim() || undefined,
+    website: website.trim() || null,
   });
 
   if (!result.success) {

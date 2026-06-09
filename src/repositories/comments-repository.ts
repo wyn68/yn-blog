@@ -191,6 +191,33 @@ export class CommentsRepository extends BaseRepository {
       return 0;
     }
   }
+
+  /**
+   * 按作者统计评论数（通过关联 posts 表的 author_id）
+   */
+  async countByAuthorId(authorId: string, status?: string) {
+    try {
+      const supabase = this.getPublicClient();
+      let query = supabase
+        .from("comments")
+        .select("id", { count: "exact" })
+        .eq("posts.author_id", authorId);
+
+      if (status) {
+        query = query.eq("status", status);
+      }
+
+      const { count, error } = await query;
+      if (error) {
+        devError('Error fetching comment count by author:', error);
+        return 0;
+      }
+      return count || 0;
+    } catch (error) {
+      devError('Unexpected error in countByAuthorId:', error);
+      return 0;
+    }
+  }
 }
 
 export const commentsRepository = new CommentsRepository();

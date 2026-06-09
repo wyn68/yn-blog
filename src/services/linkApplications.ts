@@ -1,7 +1,7 @@
 import { cacheWithLog } from "@/lib/cache-with-log";
 import { linkApplicationsRepository } from "@/repositories/link-applications-repository";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { linksRepository } from "@/repositories/links-repository";
-import { createClient } from "@/lib/supabase";
 import type { LinkApplication } from "@/types";
 
 export async function getAllLinkApplicationsUncached(): Promise<LinkApplication[]> {
@@ -25,7 +25,7 @@ export const getLinkApplicationById = cacheWithLog(async (id: string) => {
 }, 'linkApplications.getById');
 
 export async function createLinkApplication(application: Omit<LinkApplication, "id" | "created_at" | "updated_at">) {
-  const supabase = createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("link_applications")
     .insert([application])

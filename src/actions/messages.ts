@@ -55,8 +55,9 @@ export async function submitMessage(content: string): Promise<{ success: boolean
 
   try {
     const sanitizedContent = sanitizeHtml(content.trim());
-    // 使用普通 client（携带用户 JWT），依赖 RLS 策略确保用户只能创建自己的留言
-    const { error } = await supabase
+    // 使用 admin client（service_role）绕过 RLS
+    const adminClient = createAdminClient();
+    const { error } = await adminClient
       .from("messages")
       .insert({
         user_id: profile.id,

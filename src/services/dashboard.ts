@@ -34,24 +34,29 @@ export const getDashboardStats = cacheWithLog(
   }): Promise<DashboardStats> => {
     const isEditorOrHigher = ['admin', 'editor'].includes(params.role);
     const isAdmin = params.role === 'admin';
+    const isAuthorOnly = params.role === 'author';
 
     const [
       publishedPosts,
       categories,
       tags,
       approvedComments,
-      pendingComments,
       recentPosts,
     ] = await Promise.all([
-      postsRepository.count("published"),
+      // 作者角色只统计自己的文章
+      isAuthorOnly && params.authorId
+        ? postsRepository.countPublishedByAuthor(params.authorId)
+        : postsRepository.count("published"),
       categoriesRepository.count(),
       tagsRepository.count(),
-      commentsRepository.countByPostId(undefined, "approved"),
-      commentsRepository.countByPostId(undefined, "pending"),
+      // 作者角色只统计自己文章的评论
+      isAuthorOnly && params.authorId
+        ? commentsRepository.countByAuthorId(params.authorId, "approved")
+        : commentsRepository.countByPostId(undefined, "approved"),
       postsRepository.findMany(
         {
           status: "published",
-          ...(params.authorId && !isEditorOrHigher
+          ...(params.authorId && isAuthorOnly
             ? { authorId: params.authorId }
             : {}),
         },
@@ -60,13 +65,18 @@ export const getDashboardStats = cacheWithLog(
     ]);
 
     // 以下统计仅 editor+ 可见，使用 admin client
+    let pendingComments = 0;
     let pendingLinkApplications = 0;
     let pendingRoleApplications = 0;
     let unreadMessages = 0;
 
     if (isEditorOrHigher) {
       const adminClient = createAdminClient();
-      const [linkApps, roleApps, messages] = await Promise.all([
+      const [pendingCommentCount, linkApps, roleApps, messages] = await Promise.all([
+        adminClient
+          .from("comments")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pending"),
         adminClient
           .from("link_applications")
           .select("id", { count: "exact", head: true })
@@ -85,6 +95,7 @@ export const getDashboardStats = cacheWithLog(
           : Promise.resolve({ count: 0 }),
       ]);
 
+      pendingComments = pendingCommentCount.count || 0;
       pendingLinkApplications = linkApps.count || 0;
       pendingRoleApplications = roleApps.count || 0;
       unreadMessages = messages.count || 0;
