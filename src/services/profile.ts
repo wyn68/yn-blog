@@ -20,7 +20,7 @@ export async function getProfile(userId: string): Promise<Profile | null> {
 
 export async function updateProfile(
   userId: string,
-  updates: { username?: string; bio?: string; avatar_url?: string; website?: string }
+  updates: { username?: string; bio?: string | null; avatar_url?: string | null; website?: string | null }
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
   

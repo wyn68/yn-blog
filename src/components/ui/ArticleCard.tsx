@@ -3,7 +3,7 @@
 import { memo, type MouseEvent } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Calendar, User, Clock, MessageCircle, ArrowRight, Eye } from "lucide-react";
+import { Calendar, User, Clock, MessageCircle, Eye } from "lucide-react";
 import { calculateReadingTime, formatDate } from "@/lib/utils";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import LoadingLink from "@/components/LoadingLink";
@@ -266,65 +266,6 @@ const ArticleCard = memo(function ArticleCard({
           </div>
         </div>
       </div>
-    </LoadingLink>
-  );
-});
-
-export const ArticleCardHorizontal = memo(function ArticleCardHorizontal({ post }: { post: ArticleCardProps["post"] }) {
-  const { startLoading } = useRouterState();
-  const router = useRouter();
-  const readingTime = post.reading_time || calculateReadingTime(post.content || '');
-  const viewCount = post.view_count || 0;
-  
-  const displayDate = formatDate(post.created_at);
-
-  const handleCategoryClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (post.categories?.slug) {
-      startLoading();
-      router.push(`/categories/${post.categories.slug}`);
-    }
-  };
-
-  return (
-    <LoadingLink href={`/posts/${post.slug}`} className="flex items-center gap-6 p-4 rounded-xl hover:bg-secondary/50 transition-colors cursor-pointer group">
-      {post.featured_image && (
-        <div className="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
-          <OptimizedImage
-            src={post.featured_image}
-            alt={post.title}
-            fill
-            sizes="96px"
-            aspectRatio="1/1"
-          />
-        </div>
-      )}
-      <div className="flex-1 min-w-0">
-        {post.categories && (
-          <button
-            onClick={handleCategoryClick}
-            className="text-xs text-primary hover:underline cursor-pointer"
-          >
-            {post.categories.name}
-          </button>
-        )}
-        <h3 className="font-semibold line-clamp-1 mb-1 group-hover:text-primary transition-colors mt-1">
-          {post.title}
-        </h3>
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <span>{displayDate}</span>
-          <span className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {readingTime} 分钟
-          </span>
-          <span className="flex items-center gap-1">
-            <Eye className="h-3 w-3" />
-            {viewCount}
-          </span>
-        </div>
-      </div>
-      <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all flex-shrink-0" />
     </LoadingLink>
   );
 });

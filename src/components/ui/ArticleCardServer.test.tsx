@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import React from 'react';
-import { ArticleCardServer, ArticleCardHorizontalServer } from '@/components/ui/ArticleCardServer';
+import { ArticleCardServer } from '@/components/ui/ArticleCardServer';
 import type { Post } from '@/types';
 import { RouterStateProvider } from '@/lib/router-state';
 
@@ -276,61 +276,6 @@ describe('ArticleCardServer', () => {
       const viewCounts = screen.getAllByText('0');
       expect(viewCounts.length).toBeGreaterThan(0);
     });
-  });
-});
-
-describe('ArticleCardHorizontalServer', () => {
-  afterEach(() => {
-    cleanup();
-  });
-
-  it('should render without crashing', () => {
-    const post = createMockPost();
-    renderWithProviders(React.createElement(ArticleCardHorizontalServer, { post }));
-
-    expect(screen.getByText('Test Post Title')).toBeInTheDocument();
-  });
-
-  it('should render horizontal layout with image on left', () => {
-    const post = createMockPost({ featured_image: 'https://example.com/image.jpg' });
-    renderWithProviders(React.createElement(ArticleCardHorizontalServer, { post }));
-
-    const imageContainer = document.querySelector('.w-24');
-    expect(imageContainer).toBeInTheDocument();
-  });
-
-  it('should render arrow icon', () => {
-    const post = createMockPost();
-    renderWithProviders(React.createElement(ArticleCardHorizontalServer, { post }));
-
-    const arrowIcon = document.querySelector('svg');
-    expect(arrowIcon).toBeInTheDocument();
-  });
-
-  it('should render reading time and view count', () => {
-    const post = createMockPost({ reading_time: 5, view_count: 100 });
-    renderWithProviders(React.createElement(ArticleCardHorizontalServer, { post }));
-
-    expect(screen.getByText('5 分钟')).toBeInTheDocument();
-    expect(screen.getByText('100')).toBeInTheDocument();
-  });
-
-  it('should have correct link href', () => {
-    const post = createMockPost({ slug: 'horizontal-post' });
-    renderWithProviders(React.createElement(ArticleCardHorizontalServer, { post }));
-
-    const links = screen.getAllByRole('link');
-    const mainLink = links.find(link => link.getAttribute('href') === '/posts/horizontal-post');
-    expect(mainLink).toBeDefined();
-  });
-
-  it('should render category when available', () => {
-    const post = createMockPost({
-      categories: { name: 'Design', slug: 'design' },
-    });
-    renderWithProviders(React.createElement(ArticleCardHorizontalServer, { post }));
-
-    expect(screen.getByText('Design')).toBeInTheDocument();
   });
 });
 

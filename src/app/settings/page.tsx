@@ -26,7 +26,7 @@ export default function SettingsPage() {
           return;
         }
 
-        setSession({ user: { id: profileData.profile.user_id } });
+        setSession({ user: { id: profileData.profile.user_id, email: profileData.email || undefined } });
         setProfile(profileData.profile);
       } catch (err) {
         console.error("Error fetching profile:", err);

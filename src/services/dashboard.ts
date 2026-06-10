@@ -2,7 +2,6 @@ import { cacheWithLog } from "@/lib/cache-with-log";
 import { postsRepository } from "@/repositories/posts-repository";
 import { categoriesRepository } from "@/repositories/categories-repository";
 import { tagsRepository } from "@/repositories/tags-repository";
-import { commentsRepository } from "@/repositories/comments-repository";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export interface DashboardStats {
@@ -32,74 +31,87 @@ export const getDashboardStats = cacheWithLog(
     role: string;
     authorId?: string;
   }): Promise<DashboardStats> => {
-    const isEditorOrHigher = ['admin', 'editor'].includes(params.role);
-    const isAdmin = params.role === 'admin';
-    const isAuthorOnly = params.role === 'author';
+    const isEditorOrHigher = ["admin", "editor"].includes(params.role);
+    const isAdmin = params.role === "admin";
+    const isAuthorOnly = params.role === "author";
+    const adminClient = createAdminClient();
 
-    const [
-      publishedPosts,
-      categories,
-      tags,
-      approvedComments,
-      recentPosts,
-    ] = await Promise.all([
-      // 作者角色只统计自己的文章
-      isAuthorOnly && params.authorId
-        ? postsRepository.countPublishedByAuthor(params.authorId)
-        : postsRepository.count("published"),
-      categoriesRepository.count(),
-      tagsRepository.count(),
-      // 作者角色只统计自己文章的评论
-      isAuthorOnly && params.authorId
-        ? commentsRepository.countByAuthorId(params.authorId, "approved")
-        : commentsRepository.countByPostId(undefined, "approved"),
-      postsRepository.findMany(
-        {
-          status: "published",
-          ...(params.authorId && isAuthorOnly
-            ? { authorId: params.authorId }
-            : {}),
-        },
-        { limit: 2, orderBy: "created_at", orderDirection: "desc" }
-      ),
-    ]);
+    // 预取文章数据（作者只取自己的）
+    const [publishedPosts, categories, tags, recentPosts] =
+      await Promise.all([
+        isAuthorOnly && params.authorId
+          ? postsRepository.countPublishedByAuthor(params.authorId)
+          : postsRepository.count("published"),
+        categoriesRepository.count(),
+        tagsRepository.count(),
+        postsRepository.findMany(
+          {
+            status: "published",
+            ...(params.authorId && isAuthorOnly
+              ? { authorId: params.authorId }
+              : {}),
+          },
+          { limit: 2, orderBy: "created_at", orderDirection: "desc" }
+        ),
+      ]);
 
-    // 以下统计仅 editor+ 可见，使用 admin client
-    let pendingComments = 0;
-    let pendingLinkApplications = 0;
-    let pendingRoleApplications = 0;
-    let unreadMessages = 0;
-
-    if (isEditorOrHigher) {
-      const adminClient = createAdminClient();
-      const [pendingCommentCount, linkApps, roleApps, messages] = await Promise.all([
-        adminClient
-          .from("comments")
-          .select("id", { count: "exact", head: true })
-          .eq("status", "pending"),
-        adminClient
-          .from("link_applications")
-          .select("id", { count: "exact", head: true })
-          .eq("status", "pending"),
+    // 评论统计：使用 admin client 绕过 RLS
+    const [approvedComments, pendingComments, linkApps, roleApps, messages] =
+      await Promise.all([
+        // 已通过评论
+        isAuthorOnly && params.authorId
+          ? adminClient
+              .from("posts")
+              .select("id")
+              .eq("author_id", params.authorId)
+              .then(({ data: posts }) => {
+                if (!posts || posts.length === 0) return 0;
+                const postIds = posts.map((p) => p.id);
+                return adminClient
+                  .from("comments")
+                  .select("id", { count: "exact", head: true })
+                  .in("post_id", postIds)
+                  .eq("status", "approved")
+                  .then(({ count }) => count || 0);
+              })
+          : adminClient
+              .from("comments")
+              .select("id", { count: "exact", head: true })
+              .eq("status", "approved")
+              .then(({ count }) => count || 0),
+        // 待审核评论（仅 editor+）
+        isEditorOrHigher
+          ? adminClient
+              .from("comments")
+              .select("id", { count: "exact", head: true })
+              .eq("status", "pending")
+              .then(({ count }) => count || 0)
+          : 0,
+        // 待处理友链申请（仅 editor+）
+        isEditorOrHigher
+          ? adminClient
+              .from("link_applications")
+              .select("id", { count: "exact", head: true })
+              .eq("status", "pending")
+              .then(({ count }) => count || 0)
+          : 0,
+        // 待处理角色申请（仅 admin）
         isAdmin
           ? adminClient
               .from("role_applications")
               .select("id", { count: "exact", head: true })
               .eq("status", "pending")
-          : Promise.resolve({ count: 0 }),
+              .then(({ count }) => count || 0)
+          : 0,
+        // 未读用户留言（仅 admin）
         isAdmin
           ? adminClient
               .from("messages")
               .select("id", { count: "exact", head: true })
               .eq("status", "unread")
-          : Promise.resolve({ count: 0 }),
+              .then(({ count }) => count || 0)
+          : 0,
       ]);
-
-      pendingComments = pendingCommentCount.count || 0;
-      pendingLinkApplications = linkApps.count || 0;
-      pendingRoleApplications = roleApps.count || 0;
-      unreadMessages = messages.count || 0;
-    }
 
     return {
       publishedPosts,
@@ -107,9 +119,9 @@ export const getDashboardStats = cacheWithLog(
       tags: isEditorOrHigher ? tags : 0,
       approvedComments,
       pendingComments,
-      pendingLinkApplications,
-      pendingRoleApplications,
-      unreadMessages,
+      pendingLinkApplications: linkApps,
+      pendingRoleApplications: roleApps,
+      unreadMessages: messages,
       recentPosts: recentPosts.map((p) => ({
         id: p.id,
         title: p.title,

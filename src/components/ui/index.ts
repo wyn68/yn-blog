@@ -3,8 +3,8 @@ export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, 
 export { Input, inputVariants, type InputProps } from "./Input";
 export { Badge, badgeVariants, type BadgeProps } from "./Badge";
 export { Avatar, AuthorAvatar, avatarVariants, type AvatarProps, type AuthorAvatarProps } from "./Avatar";
-export { default as ArticleCard, ArticleCardHorizontal } from "./ArticleCard";
-export { ArticleCardServerPure, ArticleCardHorizontalServerPure } from "./ArticleCardServerPure";
+export { default as ArticleCard } from "./ArticleCard";
+export { ArticleCardServerPure } from "./ArticleCardServerPure";
 export { Dialog } from "./Dialog";
 export { default as EmptyState } from "./EmptyState";
 export { Form, SubmitButton } from "./Form";

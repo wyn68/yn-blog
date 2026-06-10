@@ -75,8 +75,8 @@ export async function saveProfile(formData: FormData) {
 
   const result = await updateProfile(profile.user_id, {
     username: username.trim(),
-    bio: bio?.trim() || undefined,
-    avatar_url: avatar_url?.trim() || undefined,
+    bio: bio?.trim() || null,
+    avatar_url: avatar_url?.trim() || null,
     website: website.trim() || null,
   });
 

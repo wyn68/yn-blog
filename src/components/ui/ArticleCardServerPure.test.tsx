@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import React from 'react';
-import { ArticleCardServerPure, ArticleCardHorizontalServerPure } from '@/components/ui/ArticleCardServerPure';
+import { ArticleCardServerPure } from '@/components/ui/ArticleCardServerPure';
 
 const createElement = React.createElement;
 
@@ -191,68 +191,6 @@ describe('ArticleCardServerPure Component', () => {
     it('should not use any React hooks', () => {
       render(
         createElement(ArticleCardServerPure, { post: mockPost })
-      );
-
-      expect(screen.getByText('Test Article Title')).toBeInTheDocument();
-    });
-  });
-});
-
-describe('ArticleCardHorizontalServerPure Component', () => {
-  afterEach(() => {
-    cleanup();
-  });
-
-  it('should render without crashing', () => {
-    render(
-      createElement(ArticleCardHorizontalServerPure, { post: mockPost })
-    );
-
-    expect(screen.getByText('Test Article Title')).toBeInTheDocument();
-  });
-
-  it('should render horizontal layout', () => {
-    const { container } = render(
-      createElement(ArticleCardHorizontalServerPure, { post: mockPost })
-    );
-
-    const card = container.firstChild;
-    expect(card).toHaveClass('flex');
-    expect(card).toHaveClass('items-center');
-  });
-
-  it('should render all necessary information', () => {
-    render(
-      createElement(ArticleCardHorizontalServerPure, { post: mockPost })
-    );
-
-    expect(screen.getByText('Test Article Title')).toBeInTheDocument();
-    expect(screen.getByText('Technology')).toBeInTheDocument();
-    expect(screen.getByText('2024/1/15')).toBeInTheDocument();
-    expect(screen.getByText('5 分钟')).toBeInTheDocument();
-    expect(screen.getByText('100')).toBeInTheDocument();
-  });
-
-  it('should handle post without image', () => {
-    render(
-      createElement(ArticleCardHorizontalServerPure, { post: mockPostNoImage })
-    );
-
-    expect(screen.getByText('Test Article Title')).toBeInTheDocument();
-  });
-
-  describe('Server-Side Rendering Compatibility', () => {
-    it('should render without client-side dependencies', () => {
-      render(
-        createElement(ArticleCardHorizontalServerPure, { post: mockPost })
-      );
-
-      expect(screen.getByText('Test Article Title')).toBeInTheDocument();
-    });
-
-    it('should not use any React hooks', () => {
-      render(
-        createElement(ArticleCardHorizontalServerPure, { post: mockPost })
       );
 
       expect(screen.getByText('Test Article Title')).toBeInTheDocument();
