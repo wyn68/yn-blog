@@ -108,6 +108,11 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    background-color: #fefefe;
+  }
+
+  html.dark {
+    background-color: #0a0f1a;
   }
 
   body {

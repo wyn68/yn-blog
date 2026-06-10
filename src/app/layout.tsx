@@ -171,14 +171,6 @@ export default async function RootLayout({
             `,
           }}
         />
-        <style>{`
-          html {
-            background-color: #fefefe;
-          }
-          html.dark {
-            background-color: #0a0f1a;
-          }
-        `}</style>
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
