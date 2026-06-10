@@ -153,7 +153,7 @@ export default async function RootLayout({
   const organizationJsonLd = generateOrganizationJSONLD(siteTitle);
 
   return (
-    <html lang="zh-CN" className={inter.className} suppressHydrationWarning data-scroll-behavior="smooth">
+    <html lang="zh-CN" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -190,7 +190,7 @@ export default async function RootLayout({
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a" />
       </head>
-      <body className="min-h-screen bg-background text-foreground" suppressHydrationWarning>
+      <body className={`min-h-screen bg-background text-foreground ${inter.className}`} suppressHydrationWarning>
         <JsonLd data={websiteJsonLd} />
         <JsonLd data={organizationJsonLd} />
         <MonitoringInitializer />
