@@ -190,7 +190,7 @@ export default async function RootLayout({
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a" />
       </head>
-      <body className="min-h-screen bg-background text-foreground">
+      <body className="min-h-screen bg-background text-foreground" suppressHydrationWarning>
         <JsonLd data={websiteJsonLd} />
         <JsonLd data={organizationJsonLd} />
         <MonitoringInitializer />
